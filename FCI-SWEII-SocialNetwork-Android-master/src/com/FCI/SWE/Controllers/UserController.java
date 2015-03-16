@@ -36,28 +36,25 @@ public class UserController {
 	public void login(String userName, String password) {
 
 		new Connection().execute(
-				"http://tit-anium.appspot.com/rest/LoginService", userName,
+				"http:/tit-anium.appspot.com/rest/LoginService", userName,
 				password, "LoginService");
+	}
+
+	public void AddFriend(String RecEamil, String SenderEmail) {
+		new Connection().execute("http://tit-anium.appspot.com/rest/AddFriend",
+				RecEamil, SenderEmail, "AddFriend");
 	}
 
 	public void signUp(String userName, String email, String password) {
 		new Connection().execute(
-				"http://tit-anium.appspot.com/rest/RegistrationService",
+				"http:/tit-anium.appspot.com/rest/RegistrationService",
 				userName, email, password, "RegistrationService");
 	}
 
-	public void Show(String RecEamil) {
-		new Connection().execute("http://tit-anium.appspot.com/rest/Show",
-				RecEamil, "Show");
-	}
-
-	public void SignOut() {
-		new Connection().execute("http://tit-anium.appspot.com/rest/SignOut",
-				"SignOut");
-	}
-	public void AddFriend(String RecEamil ,String SenderEmail) {
-		new Connection().execute("http://tit-anium.appspot.com/rest/AddFriend",RecEamil , SenderEmail,
-				"AddFriend");
+	public void sendRequest(String fromName, String toName) {
+		new Connection().execute(
+				"http:/tit-anium.appspot.com/rest/SendRequest", fromName,
+				toName, "SendRequest");
 	}
 
 	static private class Connection extends AsyncTask<String, String, String> {
@@ -69,18 +66,17 @@ public class UserController {
 			// TODO Auto-generated method stub
 			URL url;
 			serviceType = params[params.length - 1];
-			String urlParameters;
+			String urlParameters = "";
 			if (serviceType.equals("LoginService"))
 				urlParameters = "uname=" + params[1] + "&password=" + params[2];
-			else if (serviceType.equals("Show"))
-				urlParameters = "RecEamil" + params[1];
-			else if (serviceType.equals("AddFriend"))
-				urlParameters = "RecEamil" + params[1] +"&SenderEmail" +params[2] ;
-
-			else
+			else if (serviceType.equals("RegistrationService"))
 				urlParameters = "uname=" + params[1] + "&email=" + params[2]
 						+ "&password=" + params[3];
-
+			else if (serviceType.equals("SendRequest"))
+				urlParameters = "fromName=" + params[1] + "&fromName="
+						+ params[2];
+			else if (serviceType.equals("Show"))
+				urlParameters = "RecEamil" + params[1];
 			HttpURLConnection connection;
 			try {
 				url = new URL(params[0]);
@@ -145,21 +141,30 @@ public class UserController {
 					homeIntent.putExtra("name", object.getString("name"));
 
 					Application.getAppContext().startActivity(homeIntent);
-				} else if (serviceType.equals("Show")) {
-					Intent replayIntent = new Intent(
-							Application.getAppContext(), ShowRequest.class);
-					replayIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-					replayIntent.putExtra("name", result);
-					Application.getAppContext().startActivity(replayIntent);
-
-					currentActiveUser = UserEntity.createLoginUser(result);
-
 				} else {
-					Intent homeIntent = new Intent(Application.getAppContext(),
-							HomeActivity.class);
-					homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-					homeIntent.putExtra("status", "Registered successfully");
-					Application.getAppContext().startActivity(homeIntent);
+					if (serviceType.equals("SendRequest")) {
+						Intent homeIntent = new Intent(
+								Application.getAppContext(), HomeActivity.class);
+						homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+						homeIntent.putExtra("status", "Requested successfully");
+						Application.getAppContext().startActivity(homeIntent);
+					} else if (serviceType.equals("Show")) {
+						Intent replayIntent = new Intent(
+								Application.getAppContext(), ShowRequest.class);
+						replayIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+						replayIntent.putExtra("name", result);
+						Application.getAppContext().startActivity(replayIntent);
+
+						currentActiveUser = UserEntity.createLoginUser(result);
+
+					} else {
+						Intent homeIntent = new Intent(
+								Application.getAppContext(), HomeActivity.class);
+						homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+						homeIntent
+								.putExtra("status", "Registered successfully");
+						Application.getAppContext().startActivity(homeIntent);
+					}
 				}
 
 			} catch (JSONException e) {

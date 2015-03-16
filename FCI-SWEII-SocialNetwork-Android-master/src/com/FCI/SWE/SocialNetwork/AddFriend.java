@@ -25,9 +25,6 @@ public class AddFriend extends Activity implements OnClickListener {
 		passwordEditText = (EditText) findViewById(R.id.password);
 		loginButton = (Button) findViewById(R.id.loginButton);
 		loginButton.setOnClickListener(this);
-		
-		
-		
 
 	}
 

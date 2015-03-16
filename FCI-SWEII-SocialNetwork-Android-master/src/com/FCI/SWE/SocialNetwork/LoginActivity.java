@@ -1,8 +1,9 @@
 package com.FCI.SWE.SocialNetwork;
 
+import org.json.JSONObject;
+
 import com.FCI.SWE.Controllers.Application;
 import com.FCI.SWE.Controllers.UserController;
-
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -35,7 +36,5 @@ public class LoginActivity extends Activity implements OnClickListener {
 		UserController controller = Application.getUserController();
 		controller.login(userNameEditText.getText().toString(), passwordEditText
 						.getText().toString());
-
 	}
-
 }
